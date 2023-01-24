@@ -1,41 +1,30 @@
-import React, { Component } from 'react';
-import styles from './Searchbar.module.scss';
+// import PropTypes from 'prop-types';
+// import * as yup from 'yup';
+import { nanoid } from 'nanoid';
+import { Formik, Field } from 'formik';
+import { SearchbarStyled, FormGroup, FormButton} from './Searchbar.styled';
 
-class Searchbar extends Component {
-
-    state = { query: '' };
-
-    handleChange = e => {
-        this.setState({ query: e.currentTarget.value });
-    };
-
-    handleSubmit = e => {
-        e.preventDefault();
-
-        this.props.onSubmit(this.state.query);
-        this.setState({ query: '' });
-    };
-
-    render(){
-        return (
-            <header className={styles.Searchbar}>
-                <form className={styles.SearchForm} onSubmit={this.handleSubmit}>
-                    <input
-                        className={styles.SearchForm_input} 
-                        type="text"
-                        autoComplete="off"
-                        autoFocus
-                        placeholder="Search images and photos"
-                        value={this.state.query}
-                        onChange={this.handleChange}
-                    />
-                    <button type="submit" className={styles.SearchForm_button} >
-                        <span>Search</span>
-                    </button>
-                </form>
-            </header>
-        );
+const Searchbar = ({ submitHandler }) => {
+    const queryId = nanoid();
+    const handleSubmit = (values, actions) => {
+        submitHandler(values);
+        actions.resetForm();
     }
+    return(
+        <Formik
+        initialValues={{query: ''}}
+        onSubmit={handleSubmit}
+        >
+            <SearchbarStyled>
+                <FormGroup>
+                    <label htmlFor={queryId}>
+                        <Field type="text" id={queryId} name="query" placeholder="Enter search query" />
+                    </label>
+                </FormGroup>
+                <FormButton type="submit">🔍</FormButton>
+            </SearchbarStyled>
+        </Formik>
+    ) 
 };
 
 export default Searchbar;
