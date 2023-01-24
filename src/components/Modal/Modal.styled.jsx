@@ -14,9 +14,7 @@ export const ModalStyled = styled.div`
         background: #fff;
         padding: 20px;
         border-radius: ${props => props.theme.radii.cardBorderRadius}px;
-        max-width: 500px;
         min-width: 300px;
         min-height: 100px;
-        max-height: 500px;
     }
 `;

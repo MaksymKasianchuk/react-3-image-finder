@@ -5,11 +5,14 @@ import { Formik, Field } from 'formik';
 import { SearchbarStyled, FormGroup, FormButton} from './Searchbar.styled';
 
 const Searchbar = ({ submitHandler }) => {
+
     const queryId = nanoid();
+
     const handleSubmit = (values, actions) => {
         submitHandler(values);
         actions.resetForm();
-    }
+    };
+
     return(
         <Formik
         initialValues={{query: ''}}

@@ -1,30 +1,74 @@
 import React, { Component } from 'react'
-import { nanoid } from 'nanoid';
 import { Container } from './App.styled';
-import Modal from 'components/Modal';
 import Searchbar from 'components/Searchbar';
-import Section from 'components/Section';
+import ImageGallery from 'components/ImageGallery';
+import Button from 'components/Button';
+import * as API from 'api/api';
 
-const STATUS ={
-  
-}
+const STATUSES = {
+  IDLE: 'idle',
+  PENDING: 'pending',
+  REJECTED: 'rejected',
+  RESOLVED: 'resolved'
+};
 
 export default class App extends Component {
   state ={
-    searchQuery: '',
-    status: ''
+    images: [],
+    query: '',
+    page: 1,
+    error: '',
+    status: STATUSES.IDLE,
   }
 
-  handleSubmit = () =>{
+  componentDidUpdate(_, prevState){
+    const { query, page } = this.state;
+    if(prevState.query !== query || prevState.page !== page){
+      this.fetchImages();
+    }
+  };
 
+  handleSubmit = (values) =>{
+    const { query } = values;
+    this.setState({ 
+      images: [],
+      query, 
+      page: 1,
+      error: '',
+    });
+  };
+
+  loadMore = () => {
+    this.setState(prevState => ({page: prevState.page + 1}));
+  };
+
+  fetchImages = async () => {
+    this.setState({status: STATUSES.PENDING});
+    const { query, page } = this.state;
+    try {
+      const newImages = await API.searchImages(query, page);
+      this.setState(prevState => ({
+        images: [...prevState.images, ...newImages],
+        status: STATUSES.RESOLVED
+      }));
+    } 
+    catch (error) {
+      this.setState({
+        error,
+        status: STATUSES.REJECTED
+      });
+    }
   }
 
   render() {
-
+    const { images, query, page, error, status } = this.state;
     return (
       <>
-        <Searchbar submitHandler={()=>this.handleSubmit} />
-        {/* <Modal></Modal> */}
+        <Searchbar submitHandler={this.handleSubmit} />
+        <Container>
+          <ImageGallery images={images}/>
+          {images.length > 0 && (<Button clickHandler={this.loadMore}/>)}
+        </Container>
       </>
     );
   }
