@@ -1,8 +1,9 @@
 import React, { Component } from 'react'
-import { Container } from './App.styled';
+import { Container, ErrorMessage, LoadMoreBtnWrap } from './App.styled';
 import Searchbar from 'components/Searchbar';
 import ImageGallery from 'components/ImageGallery';
 import Button from 'components/Button';
+import Loader from 'components/Loader';
 import * as API from 'api/api';
 
 const STATUSES = {
@@ -34,7 +35,6 @@ export default class App extends Component {
       images: [],
       query, 
       page: 1,
-      error: '',
     });
   };
 
@@ -47,10 +47,18 @@ export default class App extends Component {
     const { query, page } = this.state;
     try {
       const newImages = await API.searchImages(query, page);
-      this.setState(prevState => ({
-        images: [...prevState.images, ...newImages],
-        status: STATUSES.RESOLVED
-      }));
+      if(newImages.length === 0){
+        this.setState({
+          error: `Nothing found for your request: ${query}`,
+          status: STATUSES.REJECTED
+        });
+      }
+      else{
+        this.setState(prevState => ({
+          images: [...prevState.images, ...newImages],
+          status: STATUSES.RESOLVED
+        }));
+      }
     } 
     catch (error) {
       this.setState({
@@ -62,14 +70,48 @@ export default class App extends Component {
 
   render() {
     const { images, query, page, error, status } = this.state;
-    return (
-      <>
+
+    if(status === STATUSES.IDLE){
+      return(
+        <Searchbar submitHandler={this.handleSubmit} />
+      );
+    };
+
+    if(status === STATUSES.PENDING){
+      return(
+        <>
         <Searchbar submitHandler={this.handleSubmit} />
         <Container>
           <ImageGallery images={images}/>
-          {images.length > 0 && (<Button clickHandler={this.loadMore}/>)}
+          <Loader/>
         </Container>
-      </>
-    );
+        </>
+      );
+    };
+
+    if(status === STATUSES.RESOLVED){
+      return(
+        <>
+          <Searchbar submitHandler={this.handleSubmit} />
+          <Container>
+            <ImageGallery images={images}/>
+              <LoadMoreBtnWrap>
+                <Button clickHandler={this.loadMore}/>
+              </LoadMoreBtnWrap>
+          </Container>
+        </>
+      );
+    }
+
+    if(status === STATUSES.REJECTED){
+      return(
+        <>
+          <Searchbar submitHandler={this.handleSubmit} />
+          <Container>
+            <ErrorMessage>{error}</ErrorMessage>
+          </Container>
+        </>
+      );
+    }
   }
 }

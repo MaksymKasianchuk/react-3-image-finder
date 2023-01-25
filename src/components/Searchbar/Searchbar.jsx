@@ -1,8 +1,8 @@
 // import PropTypes from 'prop-types';
 // import * as yup from 'yup';
 import { nanoid } from 'nanoid';
-import { Formik, Field } from 'formik';
-import { SearchbarStyled, FormGroup, FormButton} from './Searchbar.styled';
+import { Formik } from 'formik';
+import { SearchbarStyled, FormGroup, FormButton, FieldStyled} from './Searchbar.styled';
 
 const Searchbar = ({ submitHandler }) => {
 
@@ -20,11 +20,9 @@ const Searchbar = ({ submitHandler }) => {
         >
             <SearchbarStyled>
                 <FormGroup>
-                    <label htmlFor={queryId}>
-                        <Field type="text" id={queryId} name="query" placeholder="Enter search query" />
-                    </label>
+                    <FieldStyled type="text" id={queryId} name="query" placeholder="Enter search query" />
+                    <FormButton type="submit">🔍</FormButton>
                 </FormGroup>
-                <FormButton type="submit">🔍</FormButton>
             </SearchbarStyled>
         </Formik>
     ) 

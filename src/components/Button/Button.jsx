@@ -1,6 +1,8 @@
+import { ButtonStyled } from './Button.styled'
+
 const Button = ({clickHandler}) => {
     return(
-        <button type="button" onClick={() =>clickHandler()}>Load More</button>
+        <ButtonStyled type="button" onClick={() =>clickHandler()}>Load More</ButtonStyled>
     )
 };
 
